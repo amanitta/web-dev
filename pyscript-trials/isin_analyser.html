@@ -1,0 +1,107 @@
+<html>
+
+<head>
+  <title>ISIN Analyzer</title>
+  <link rel="stylesheet" href="https://pyscript.net/alpha/pyscript.css" />
+  <script defer src="https://pyscript.net/alpha/pyscript.js"></script>
+  <py-env>
+   - numpy
+   - pycountry
+  </py-env>
+</head>
+
+<style>
+    input[type=text], select {
+      width: 100%;
+      padding: 12px 20px;
+      margin: 8px 0;
+      display: inline-block;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+      box-sizing: border-box;
+    }
+    
+    input[type=submit] {
+      width: 100%;
+      background-color: #4c4faf;
+      color: white;
+      padding: 14px 20px;
+      margin: 8px 0;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+    }
+    
+    input[type=submit]:hover {
+      background-color: #45a049;
+    }
+    
+    p {
+      border-radius: 5px;
+      background-color: #f2f2f2;
+      padding: 20px;
+    }
+</style>
+
+<body>
+
+    <form onsubmit="return false">
+        <label for="isin">Enter ISIN:</label><br>
+        <input type="text" id="isin" name="isin" placeholder="ISIN here"><br>
+
+        <input pys-onClick="sub" type="submit" id="btn-form" value="check" hidden>
+	
+    </form> 
+ 
+    <p id='output'></p>
+    
+    <py-script>
+  
+      import numpy as np
+      import string
+      import pycountry
+      
+      country_list = list(pycountry.countries)
+      alpha2 = []
+      names = []
+      
+      for i in range(len(country_list)):
+      	alpha2.append(country_list[i].alpha_2)
+        # names.append(country_list[i].name)
+
+      chars = list(np.arange(0, 10).astype(str)) + list(string.ascii_lowercase)
+      nums = [i for i in range(len(chars))]
+      alpha_to_digit = {k: v for k, v in zip(chars, nums)}
+
+      def luhn_check(isin: str, verbose: bool=False):
+          if len(isin) != 12:
+          	return 'NOT VALID'
+
+          target = int(isin[-1])
+          test_isin = isin[:-1]
+
+          mapped = list(''.join([str(alpha_to_digit[c]) for c in list(test_isin.lower())]))
+          mapped.reverse()
+
+          doubled = [int(mapped[i]) * (1 + (1 - i % 2)) for i in range(len(mapped))]
+
+          final = [n % 10 + int(n / 10) for n in doubled]
+          check = (10 - sum(final) % 10) % 10
+
+          if verbose:
+              print('target:', target)
+              print('check:', check)
+
+          if check == target:
+              return 'VALID'
+          else:
+              return 'NOT VALID'
+              
+      def sub(*args,**kwargs):
+      	result_place = Element('output')
+      	result_place.write(f"{luhn_check(Element('isin').value)}") 
+      
+    </py-script>
+
+</body>
+</html>
