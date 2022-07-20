@@ -1,0 +1,36 @@
+/*style for a class*/
+.error {
+	color:  red;
+} 
+
+p.bluerror.feedback {
+	color:  orange;
+	border: 1px dashed green;
+}
+
+/*targeting an id*/
+div#content {
+	background-color: #ebebeb;
+	border: 1px dashed red;
+	padding: 20px;
+}
+
+/*target children elements*/
+div .error {
+	color:  purple;
+}
+
+/*targeting by attribute value*/
+a[href="https://www.gazzetta.it"] {
+	background-color: green;
+	color: white;
+	text-decoration: none;
+}
+
+/*targeting links ending with .it*/
+a[href$=".it"] {
+	color: blue;
+} 
+p {
+	border: inherit;
+}
